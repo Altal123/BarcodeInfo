@@ -18,11 +18,27 @@
             <configuration>
                     <archive>
                     <manifest>
+                        <addClasspath>true</addClasspath>
+
                         <mainClass>org.client.BarcodeInfoClient</mainClass>
                     </manifest>
                 </archive>
             </configuration>
           </plugin>
+          <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
