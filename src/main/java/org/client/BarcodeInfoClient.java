@@ -15,7 +15,7 @@ public class BarcodeInfoClient {
     private static String filePath = "d:\\Sasha\\myparcel_log.txt"; //файл с логами посылок
     private static Map<String, String> currentParcelsStatus = new LinkedHashMap<String, String>(); //key - ID , value - parcel status
     private static List<String> statusFromFile; //инфа о статусе посылок, прочитанная с файла логами посылок
-
+    private static JFrame frmOpt;  //dummy JFrame
 
     public static void main(String[] args) {
 
@@ -43,12 +43,10 @@ public class BarcodeInfoClient {
                 barCodeInfo(d);
             }
         } else {
-            System.out.println("Please add the required list of parcel`s!");
+
+            showMessage("Warning!","Please add the required list of parcel`s!" );
             System.exit(-1);
         }
-
-//        barCodeInfo("342erfegf");
-//        barCodeInfo("wedwdw222");
 
         ListIterator<String> itr;
         String temp, key, value;
@@ -68,20 +66,27 @@ public class BarcodeInfoClient {
                         exist = true;
                         if (!entry.getValue().equalsIgnoreCase(value)) {
                             itr.set(key + ">" + entry.getValue());
-                            JOptionPane.showMessageDialog(null, "Parcel Id: " + key
-                                    + "\n" + entry.getValue(), "Position of the parcel was changed!", JOptionPane.INFORMATION_MESSAGE);
+                            showMessage("Position of the parcel was changed!","Parcel Id: " + key + "\n" + entry.getValue());
+                            //JOptionPane.showMessageDialog(null, "Parcel Id: " + key
+                            //        + "\n" + entry.getValue(), "Position of the parcel was changed!", JOptionPane.INFORMATION_MESSAGE);
                         } else continue;
                     }
                 }
                 //Строки с ID в коллекции, полученной с файла нет - добавляем инфу о посылке в коллекцию
-                if (!exist) itr.add(entry.getKey() + ">" + entry.getValue());
+                if (!exist){
+                    itr.add(entry.getKey() + ">" + entry.getValue());
+                    showMessage("Current position of the parcel", "Parcel Id: " + entry.getKey() + "\n" + entry.getValue());
+                    //JOptionPane.showMessageDialog(null, "Parcel Id: " + entry.getKey()
+                    //        + "\n" + entry.getValue(), "Current position of the parcel", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         } else {
-            //файл-лога был пустой, а значит заполняем коллекцию инфой с текущем статусе посылок.
+            //файл был пустой, а значит заполняем коллекцию инфой с текущим статусом посылок.
             itr = statusFromFile.listIterator();
             for (Map.Entry<String, String> entry : currentParcelsStatus.entrySet()) {
-                JOptionPane.showMessageDialog(null, "Parcel Id: " + entry.getKey()
-                        + "\n" + entry.getValue(), "Current position of the parcel", JOptionPane.INFORMATION_MESSAGE);
+                showMessage("Current position of the parcel", "Parcel Id: " + entry.getKey() + "\n" + entry.getValue());
+//                JOptionPane.showMessageDialog(null, "Parcel Id: " + entry.getKey()
+//                        + "\n" + entry.getValue(), "Current position of the parcel", JOptionPane.INFORMATION_MESSAGE);
 
                 itr.add(entry.getKey() + ">" + entry.getValue());
             }
@@ -104,6 +109,20 @@ public class BarcodeInfoClient {
 
     }
 
+    private static void showMessage(String topic, String body) {
+
+        //if (frmOpt == null) {
+            frmOpt = new JFrame();
+        //}
+        frmOpt.setLocationRelativeTo(null);
+        frmOpt.setAlwaysOnTop(true);
+        frmOpt.setVisible(true); // show main frame
+
+        JOptionPane.showMessageDialog(frmOpt, body, topic, JOptionPane.INFORMATION_MESSAGE);
+
+        frmOpt.dispose();
+    }
+
     private static void barCodeInfo(String id) {
         BarcodeStatistic service = new BarcodeStatistic();
 
@@ -112,7 +131,7 @@ public class BarcodeInfoClient {
         BarcodeInfoService response = barInfo.getBarcodeInfo("fcc8d9e1-b6f9-438f-9ac8-b67ab44391dd", id, Culture.UK);
 
         //добавляем инфу со статусом посылок в мап-коллекцию
-        currentParcelsStatus.put(response.getBarcode(), response.getEventdescription()+ "wede");
+        currentParcelsStatus.put(response.getBarcode(), response.getEventdescription());
 
     }
 }
