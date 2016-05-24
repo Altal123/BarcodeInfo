@@ -12,7 +12,7 @@ import java.util.List;
 
 public class BarcodeInfoClient {
 
-    private static String filePath = "d:\\Sasha\\myparcel_log.txt"; //файл с логами посылок
+    private static String filePath = "d:\\myparcel_log.txt"; //файл с логами посылок
     private static Map<String, String> currentParcelsStatus = new LinkedHashMap<String, String>(); //key - ID , value - parcel status
     private static List<String> statusFromFile; //инфа о статусе посылок, прочитанная с файла логами посылок
     private static JFrame frmOpt;  //dummy JFrame
@@ -37,7 +37,7 @@ public class BarcodeInfoClient {
             e.printStackTrace();
         }
 
-        //формируем мап-коллекцию с текущим статусом посылок
+        //формируем мап-коллекцию currentParcelsStatus с текущим статусом посылок
         if (args.length > 0){
             for (String d:args){
                 barCodeInfo(d);
@@ -49,7 +49,9 @@ public class BarcodeInfoClient {
         }
 
         ListIterator<String> itr;
-        String temp, key, value;
+        String temp;
+        String key = null;
+        String value = null;
         boolean exist;
         if (!statusFromFile.isEmpty()) {
             //сравниваем полученную мап-коллекцию с коллекцией строк, полученную из файла
@@ -58,8 +60,21 @@ public class BarcodeInfoClient {
                 exist = false;
                 while (itr.hasNext()) {
                     temp = itr.next();
-                    key = temp.split(">")[0];
-                    value = temp.split(">")[1];
+
+                    if (temp.contains(">")){
+                        if(temp.split(">").length == 2){
+                            key = temp.split(">")[0];
+                            value = temp.split(">")[1];
+                        }
+                        else{
+                            //файл некорректный,т.к. аргументов !=2 а значит обнуляем файл
+                            createFile(parcelFile);
+                        }
+                    }
+                    else{
+                        //файл некорректный и не содержит символов разделителя ">", т.е. обнуляем файл
+                        createFile(parcelFile);
+                    }
 
                     //Строка с ID найдена - проверяем статус посылки и если изменился - обновляем его + выводим на экран
                     if (entry.getKey().equalsIgnoreCase(key)) {
@@ -67,8 +82,7 @@ public class BarcodeInfoClient {
                         if (!entry.getValue().equalsIgnoreCase(value)) {
                             itr.set(key + ">" + entry.getValue());
                             showMessage("Position of the parcel was changed!","Parcel Id: " + key + "\n" + entry.getValue());
-                            //JOptionPane.showMessageDialog(null, "Parcel Id: " + key
-                            //        + "\n" + entry.getValue(), "Position of the parcel was changed!", JOptionPane.INFORMATION_MESSAGE);
+
                         } else continue;
                     }
                 }
@@ -76,8 +90,7 @@ public class BarcodeInfoClient {
                 if (!exist){
                     itr.add(entry.getKey() + ">" + entry.getValue());
                     showMessage("Current position of the parcel", "Parcel Id: " + entry.getKey() + "\n" + entry.getValue());
-                    //JOptionPane.showMessageDialog(null, "Parcel Id: " + entry.getKey()
-                    //        + "\n" + entry.getValue(), "Current position of the parcel", JOptionPane.INFORMATION_MESSAGE);
+
                 }
             }
         } else {
@@ -85,9 +98,6 @@ public class BarcodeInfoClient {
             itr = statusFromFile.listIterator();
             for (Map.Entry<String, String> entry : currentParcelsStatus.entrySet()) {
                 showMessage("Current position of the parcel", "Parcel Id: " + entry.getKey() + "\n" + entry.getValue());
-//                JOptionPane.showMessageDialog(null, "Parcel Id: " + entry.getKey()
-//                        + "\n" + entry.getValue(), "Current position of the parcel", JOptionPane.INFORMATION_MESSAGE);
-
                 itr.add(entry.getKey() + ">" + entry.getValue());
             }
         }
@@ -96,8 +106,7 @@ public class BarcodeInfoClient {
         if (statusFromFile.hashCode() != hashCode) {
 
             try {
-                if (parcelFile.exists()) parcelFile.delete();
-                parcelFile.createNewFile();
+                createFile(parcelFile);
 
                 FileUtils.writeLines(parcelFile, statusFromFile);
 
@@ -107,6 +116,17 @@ public class BarcodeInfoClient {
 
         }
 
+    }
+
+    public static void createFile(File parcelFile){
+
+        try {
+            if (parcelFile.exists()) parcelFile.delete();
+            parcelFile.createNewFile();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void showMessage(String topic, String body) {
@@ -132,6 +152,5 @@ public class BarcodeInfoClient {
 
         //добавляем инфу со статусом посылок в мап-коллекцию
         currentParcelsStatus.put(response.getBarcode(), response.getEventdescription());
-
     }
 }

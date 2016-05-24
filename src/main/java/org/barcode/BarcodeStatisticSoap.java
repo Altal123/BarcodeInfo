@@ -25,9 +25,9 @@ public interface BarcodeStatisticSoap {
 
     /**
      * 
+     * @param culture
      * @param guid
      * @param barcode
-     * @param culture
      * @return
      *     returns org.barcode.BarcodeInfoService
      */
@@ -35,7 +35,7 @@ public interface BarcodeStatisticSoap {
     @WebResult(name = "GetBarcodeInfoResult", targetNamespace = "http://barcode.org/")
     @RequestWrapper(localName = "GetBarcodeInfo", targetNamespace = "http://barcode.org/", className = "org.barcode.GetBarcodeInfo")
     @ResponseWrapper(localName = "GetBarcodeInfoResponse", targetNamespace = "http://barcode.org/", className = "org.barcode.GetBarcodeInfoResponse")
-    BarcodeInfoService getBarcodeInfo(
+    public BarcodeInfoService getBarcodeInfo(
         @WebParam(name = "guid", targetNamespace = "http://barcode.org/")
         String guid,
         @WebParam(name = "barcode", targetNamespace = "http://barcode.org/")

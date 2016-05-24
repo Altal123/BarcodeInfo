@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "BarcodeStatistic", targetNamespace = "http://barcode.org/", wsdlLocation = "http://services.ukrposhta.com/barcodestatistic/barcodestatistic.asmx?WSDL")
+@WebServiceClient(name = "BarcodeStatistic", targetNamespace = "http://barcode.org/", wsdlLocation = "http://services.ukrposhta.ua/barcodestatistic/barcodestatistic.asmx?WSDL")
 public class BarcodeStatistic
     extends Service
 {
@@ -30,7 +30,7 @@ public class BarcodeStatistic
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("http://services.ukrposhta.com/barcodestatistic/barcodestatistic.asmx?WSDL");
+            url = new URL("http://services.ukrposhta.ua/barcodestatistic/barcodestatistic.asmx?WSDL");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
